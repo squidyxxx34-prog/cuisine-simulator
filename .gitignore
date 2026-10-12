@@ -1,0 +1,7 @@
+map/
+*.rbxlx
+*.rbxl
+*.lock
+__pycache__/
+rojo-bin/
+rojo.zip

@@ -1,0 +1,81 @@
+{
+  "name": "CuisineSimulator",
+  "tree": {
+    "$className": "DataModel",
+    "Workspace": {
+      "$className": "Workspace",
+      "$properties": {
+        "Gravity": 196.2
+      },
+      "Map": {
+        "$path": "map"
+      }
+    },
+    "Lighting": {
+      "$className": "Lighting",
+      "$properties": {
+        "Technology": "Future",
+        "ClockTime": 17.6,
+        "GeographicLatitude": 41,
+        "Brightness": 2.2,
+        "Ambient": [0.27, 0.24, 0.22],
+        "OutdoorAmbient": [0.55, 0.5, 0.47],
+        "EnvironmentDiffuseScale": 1,
+        "EnvironmentSpecularScale": 1,
+        "ShadowSoftness": 0.25,
+        "GlobalShadows": true
+      },
+      "Atmosphere": {
+        "$className": "Atmosphere",
+        "$properties": {
+          "Density": 0.32,
+          "Offset": 0.1,
+          "Haze": 1.6,
+          "Glare": 0.4,
+          "Color": [0.93, 0.8, 0.66],
+          "Decay": [0.66, 0.5, 0.4]
+        }
+      },
+      "Bloom": {
+        "$className": "BloomEffect",
+        "$properties": { "Intensity": 0.55, "Size": 28, "Threshold": 1.4 }
+      },
+      "ColorCorrection": {
+        "$className": "ColorCorrectionEffect",
+        "$properties": { "Saturation": 0.12, "Contrast": 0.06, "Brightness": 0.01, "TintColor": [1, 0.97, 0.93] }
+      },
+      "SunRays": {
+        "$className": "SunRaysEffect",
+        "$properties": { "Intensity": 0.05, "Spread": 0.6 }
+      }
+    },
+    "ReplicatedStorage": {
+      "$className": "ReplicatedStorage",
+      "Shared": {
+        "$path": "src/shared"
+      }
+    },
+    "ServerScriptService": {
+      "$className": "ServerScriptService",
+      "Server": {
+        "$path": "src/server"
+      }
+    },
+    "StarterPlayer": {
+      "$className": "StarterPlayer",
+      "$properties": {
+        "CameraMaxZoomDistance": 80,
+        "CharacterWalkSpeed": 18
+      },
+      "StarterPlayerScripts": {
+        "$className": "StarterPlayerScripts",
+        "Client": {
+          "$path": "src/client"
+        }
+      }
+    },
+    "SoundService": {
+      "$className": "SoundService"
+    }
+  }
+}

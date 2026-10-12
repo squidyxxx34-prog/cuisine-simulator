@@ -1,0 +1,70 @@
+name: Build place Roblox
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      publish:
+        description: "Publier aussi sur Roblox (Open Cloud)"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Générer la map
+        run: python tools/build_map.py
+
+      - name: Installer Rojo
+        run: |
+          curl -sSL -o rojo.zip https://github.com/rojo-rbx/rojo/releases/download/v7.4.4/rojo-7.4.4-linux-x86_64.zip
+          unzip -o -q rojo.zip -d rojo-bin
+          echo "$PWD/rojo-bin" >> "$GITHUB_PATH"
+
+      - name: Construire le fichier .rbxlx
+        run: rojo build default.project.json -o CuisineSimulator.rbxlx
+
+      - name: Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: CuisineSimulator
+          path: CuisineSimulator.rbxlx
+
+      - name: Release « latest » (téléchargement direct)
+        if: github.ref == 'refs/heads/main'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release delete latest --yes --cleanup-tag || true
+          gh release create latest CuisineSimulator.rbxlx \
+            --title "Dernier build" \
+            --notes "Build automatique de ${GITHUB_SHA::7}. Télécharge CuisineSimulator.rbxlx et ouvre-le dans Roblox Studio." \
+            --prerelease --target "$GITHUB_SHA"
+
+      - name: Publier sur Roblox
+        if: ${{ inputs.publish || vars.AUTO_PUBLISH == 'true' }}
+        env:
+          ROBLOX_API_KEY: ${{ secrets.ROBLOX_API_KEY }}
+          UNIVERSE_ID: ${{ vars.ROBLOX_UNIVERSE_ID }}
+          PLACE_ID: ${{ vars.ROBLOX_PLACE_ID }}
+        run: |
+          if [ -z "$ROBLOX_API_KEY" ] || [ -z "$UNIVERSE_ID" ] || [ -z "$PLACE_ID" ]; then
+            echo "::error::Configure le secret ROBLOX_API_KEY et les variables ROBLOX_UNIVERSE_ID / ROBLOX_PLACE_ID"
+            exit 1
+          fi
+          curl --fail-with-body -sS -X POST \
+            "https://apis.roblox.com/universes/v1/${UNIVERSE_ID}/places/${PLACE_ID}/versions?versionType=Published" \
+            -H "x-api-key: ${ROBLOX_API_KEY}" \
+            -H "Content-Type: application/xml" \
+            --data-binary @CuisineSimulator.rbxlx
